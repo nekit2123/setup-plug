@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 public class AuthCommand implements CommandExecutor {
     private final Main plugin;
@@ -29,6 +30,13 @@ public class AuthCommand implements CommandExecutor {
                 return true;
             }
             userManager.register(p.getName(), pass);
+            // mark logged in and set last login + IP
+            userManager.setLoggedIn(p.getName());
+            userManager.setLastLogin(p.getName(), System.currentTimeMillis());
+            try {
+                String ip = p.getAddress() != null && p.getAddress().getAddress() != null ? p.getAddress().getAddress().getHostAddress() : "";
+                userManager.setLastIp(p.getName(), ip);
+            } catch (Exception ignored) {}
             p.sendMessage(plugin.getConfig().getString("language", "en").equals("ua") ? "Ви успішно зареєстровані." : "You have registered successfully.");
             return true;
         }
@@ -38,6 +46,13 @@ public class AuthCommand implements CommandExecutor {
             String pass = args[0];
             if (userManager.checkPassword(p.getName(), pass)) {
                 userManager.setLoggedIn(p.getName());
+                userManager.setLastLogin(p.getName(), System.currentTimeMillis());
+                try {
+                    String ip = p.getAddress() != null && p.getAddress().getAddress() != null ? p.getAddress().getAddress().getHostAddress() : "";
+                    userManager.setLastIp(p.getName(), ip);
+                } catch (Exception ignored) {}
+                // remove temporary restrictions
+                try { p.removePotionEffect(PotionEffectType.BLINDNESS); } catch (Exception ignored) {}
                 p.sendMessage(plugin.getConfig().getString("language", "en").equals("ua") ? "Ви увійшли." : "You are logged in.");
             } else {
                 p.sendMessage(plugin.getConfig().getString("language", "en").equals("ua") ? "Невірний пароль." : "Invalid password.");

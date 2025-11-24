@@ -18,6 +18,9 @@ public final class Main extends JavaPlugin {
         saveDefaultConfig();
         this.userManager = new UserManager(this);
         this.brandListener = new BrandListener(this);
+        // register brand listener to receive plugin messages and events
+        getServer().getPluginManager().registerEvents(brandListener, this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "minecraft:brand");
 
         // register events and commands
         getServer().getPluginManager().registerEvents(new JoinQuitListener(this, userManager), this);

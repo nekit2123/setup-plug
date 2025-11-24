@@ -15,6 +15,7 @@ public class UserManager {
     private final File usersFile;
     private FileConfiguration usersConfig;
     private final Set<String> loggedIn = new HashSet<>();
+    private final long DEFAULT_EXPIRY_DAYS = 2; // default days after which re-registration is required
 
     public UserManager(Plugin plugin) {
         this.plugin = plugin;
@@ -32,6 +33,8 @@ public class UserManager {
 
     public void register(String player, String password) {
         usersConfig.set(player + ".password", hash(password));
+        usersConfig.set(player + ".lastLogin", System.currentTimeMillis());
+        usersConfig.set(player + ".lastIp", "");
         save();
     }
 
@@ -43,6 +46,32 @@ public class UserManager {
 
     public void setLoggedIn(String player) { loggedIn.add(player); }
     public boolean isLoggedIn(String player) { return loggedIn.contains(player); }
+
+    public void setLoggedOut(String player) { loggedIn.remove(player); }
+
+    public long getLastLogin(String player) {
+        return usersConfig.getLong(player + ".lastLogin", -1L);
+    }
+
+    public void setLastLogin(String player, long epochMillis) {
+        usersConfig.set(player + ".lastLogin", epochMillis);
+        save();
+    }
+
+    public String getLastIp(String player) {
+        return usersConfig.getString(player + ".lastIp", "");
+    }
+
+    public void setLastIp(String player, String ip) {
+        usersConfig.set(player + ".lastIp", ip);
+        save();
+    }
+
+    public void removeRegistration(String player) {
+        usersConfig.set(player, null);
+        save();
+        loggedIn.remove(player);
+    }
 
     private void save() {
         try { usersConfig.save(usersFile); } catch (Exception ignored) {}
