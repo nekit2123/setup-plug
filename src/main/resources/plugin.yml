@@ -1,0 +1,22 @@
+name: SetupPlug
+main: ru.nekit2123.setupplug.Main
+version: 0.1.0
+api-version: "1.21"
+description: "FSMPGAME plugin: Discord webhook join/quit, auth (register/login), tab UI"
+authors: [ "nekit2123" ]
+
+softdepend: [Essentials, EssentialsX]
+
+commands:
+  register:
+    description: Register with a password
+    usage: /register <password>
+  login:
+    description: Login with your password
+    usage: /login <password>
+  commands:
+    description: Show all available plugin commands
+    usage: /commands
+  lang:
+    description: Change plugin language (en/ua)
+    usage: /lang <en|ua>
