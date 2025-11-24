@@ -1,0 +1,4 @@
+header: "&6&lFSMPGAME\n&7Faculty of Maritime and International Law"
+footer: "&eOnline: %online% / %max%\n&bDiscord: %discord%\n&eStatus: %status%"
+
+# You can use placeholders: %player%, %prefix%, %suffix%, %online%, %max%, %discord%, %status%
