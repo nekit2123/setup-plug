@@ -78,14 +78,14 @@ public final class Main extends JavaPlugin {
             // otherwise fall back to legacy string method via reflection.
             try {
                 // try modern method with Components
-                Method method = p.getClass().getMethod("sendPlayerListHeaderFooter", Component.class, Component.class);
+                Method method = org.bukkit.entity.Player.class.getMethod("sendPlayerListHeaderFooter", Component.class, Component.class);
                 method.invoke(p, header, footer);
             } catch (NoSuchMethodException ex) {
                 // fallback to string method
                 try {
                     String fallbackHeaderStr = "§6§lFSMPGAME\n§7Faculty of Maritime and International Law";
                     String fallbackFooterStr = "§eOnline: " + online + " / " + max + "\n§bDiscord: " + discord + "\n§eStatus: " + status + (lunar ? "\n§bLunar Client" : "");
-                    Method legacy = p.getClass().getMethod("sendPlayerListHeaderFooter", String.class, String.class);
+                    Method legacy = org.bukkit.entity.Player.class.getMethod("sendPlayerListHeaderFooter", String.class, String.class);
                     legacy.invoke(p, fallbackHeaderStr, fallbackFooterStr);
                 } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | java.lang.reflect.InvocationTargetException ignored) {
                     // nothing we can do

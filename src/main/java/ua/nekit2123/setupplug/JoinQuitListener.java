@@ -37,9 +37,10 @@ public class JoinQuitListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         String display = getPreferredDisplayName(player);
+        String displayStripped = stripColor(display);
         boolean isUa = plugin.getConfig().getString("language", "en").equals("ua");
-        String message = isUa ? String.format("Гравець %s приєднався до сервера.", display)
-                : String.format("Player %s joined the server.", display);
+        String message = isUa ? String.format("Гравець %s приєднався до сервера.", displayStripped)
+            : String.format("Player %s joined the server.", displayStripped);
         plugin.sendDiscord(message);
 
         // authentication checks and session handling
@@ -52,6 +53,8 @@ public class JoinQuitListener implements Listener {
             // not registered -> restrict until /register
             applyAuthRestrictions(player);
             player.sendMessage(isUa ? "Ви не зареєстровані. Використайте /register <пароль>." : "You are not registered. Use /register <password>.");
+            // also send a chat notification
+            player.sendMessage(isUa ? "Повідомлення: вам потрібно зареєструватися. Команда: /register <пароль>" : "Notice: you need to register. Command: /register <password>");
             return;
         }
 
@@ -61,6 +64,8 @@ public class JoinQuitListener implements Listener {
                 // already logged in earlier today -> auto-auth
                 userManager.setLoggedIn(name);
                 try { player.removePotionEffect(PotionEffectType.BLINDNESS); } catch (Exception ignored) {}
+                // notify player they have been auto-logged in
+                player.sendMessage(isUa ? "Ви автоматично увійшли (маєте доступ до сервера сьогодні)." : "You were automatically logged in for today.");
                 return;
             }
 
@@ -70,6 +75,7 @@ public class JoinQuitListener implements Listener {
                 userManager.removeRegistration(name);
                 applyAuthRestrictions(player);
                 player.sendMessage(isUa ? "Термін реєстрації минув — зареєструйтесь знову: /register <пароль>." : "Registration expired — please re-register with /register <password>.");
+                player.sendMessage(isUa ? "Повідомлення: вам потрібно зареєструватися заново. Команда: /register <пароль>" : "Notice: you need to re-register. Command: /register <password>");
                 return;
             }
         }
@@ -78,6 +84,7 @@ public class JoinQuitListener implements Listener {
         if (!userManager.isLoggedIn(name)) {
             applyAuthRestrictions(player);
             player.sendMessage(isUa ? "Використайте /login <пароль> для входу." : "Use /login <password> to sign in.");
+            player.sendMessage(isUa ? "Повідомлення: вам потрібно увійти. Команда: /login <пароль>" : "Notice: you need to log in. Command: /login <password>");
         }
     }
 
@@ -85,9 +92,10 @@ public class JoinQuitListener implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         String display = getPreferredDisplayName(player);
+        String displayStripped = stripColor(display);
         boolean isUa = plugin.getConfig().getString("language", "en").equals("ua");
-        String message = isUa ? String.format("Гравець %s покинув сервер.", display)
-                : String.format("Player %s left the server.", display);
+        String message = isUa ? String.format("Гравець %s покинув сервер.", displayStripped)
+            : String.format("Player %s left the server.", displayStripped);
         plugin.sendDiscord(message);
         // remove temporary effects on quit
         try { player.removePotionEffect(PotionEffectType.BLINDNESS); } catch (Exception ignored) {}
@@ -182,6 +190,12 @@ public class JoinQuitListener implements Listener {
         // fallback to Bukkit/vanilla display name
         String disp = player.getDisplayName();
         return (disp != null && !disp.isEmpty()) ? disp : player.getName();
+    }
+
+    private String stripColor(String s) {
+        if (s == null) return "";
+        // remove both § and & color codes followed by a hex/format char
+        return s.replaceAll("(?i)(?:&|§)[0-9A-FK-OR]", "");
     }
 
     private boolean isSameDay(long t1, long t2) {
