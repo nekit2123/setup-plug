@@ -1,5 +1,5 @@
 name: SetupPlug
-main: ru.nekit2123.setupplug.Main
+main: ua.nekit2123.setupplug.Main
 version: 0.1.0
 api-version: "1.21"
 description: "FSMPGAME plugin: Discord webhook join/quit, auth (register/login), tab UI"
