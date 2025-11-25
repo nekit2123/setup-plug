@@ -17,6 +17,9 @@ commands:
   commands:
     description: Show all available plugin commands
     usage: /commands
+    tabreload:
+      description: Reload tab templates from tab.yml
+      usage: /tabreload
   lang:
     description: Change plugin language (en/ua)
     usage: /lang <en|ua>
